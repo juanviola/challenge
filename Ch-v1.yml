@@ -1,0 +1,27 @@
+db:
+  image: 'mongo:latest'
+lbx:
+  image: 'dockercloud/haproxy:latest'
+  deployment_strategy: high_availability
+  environment:
+    - 'HEALTH_CHECK=check inter 2000 rise 1 fall 2'
+    - 'HTTP_CHECK=OPTIONS /ping'
+  links:
+    - webx-green
+  ports:
+    - '80:80'
+  restart: always
+  roles:
+    - global
+webx-green:
+  image: 'tactivos/devops-challenge:0.0.1'
+  deployment_strategy: high_availability
+  links:
+    - db
+  restart: always
+webx-blue:
+  image: 'tactivos/devops-challenge:0.0.2'
+  deployment_strategy: high_availability
+  links:
+    - db
+  restart: always
